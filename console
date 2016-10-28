@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+set_time_limit(0);
+
+require dirname(__FILE__).'/vendor/Sequence/Application.php';
+
+$app = new Sequence\Application('anime', 'prod', true);
+$app->run(true);
