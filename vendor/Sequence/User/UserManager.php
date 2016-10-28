@@ -176,13 +176,18 @@ class UserManager
      * @param array $criteria
      * @return Database
      */
-    public function findUsers(array $criteria = array())
+    public function findUsers($criteria = '', $criteriaString = '')
     {
         $this->database->select()->from('users')->innerJoin('users_custom_field', 'id=user_id');
         
         if(!empty($criteria))
         {
             $this->database->where($criteria);
+        }
+
+        if(!empty($criteriaString))
+        {
+            $this->database->where($criteriaString);
         }
         
         return $this->database;

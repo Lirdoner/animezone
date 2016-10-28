@@ -339,6 +339,27 @@ class UserController extends Controller
                 }
             }
 
+            //check myanimelist
+            $myanimelist = $request->request->get('myanimelist', false);
+            if($myanimelist !== $user->getCustomField('myanimelist') && false !== $myanimelist)
+            {
+                if(!empty($myanimelist))
+                {
+                    $myanimelist = strip_tags($myanimelist);
+                    $validMyanimelist= new StringLength(array('min' => 3, 'max' => 50));
+                    if(!$validMyanimelist->isValid($myanimelist))
+                    {
+                        $error[] = 'Login z portalu myanimelist.net jest nieprawidłowy. Minimum 3 znaki, maksimum 50.';
+                    }
+                }
+                if(empty($error))
+                {
+                    $user->setCustomField('myanimelist', $myanimelist);
+                    $session->getFlashBag()->add('msg', 'Login z portalu myanimelist.net został zmieniony.');
+                    $changes = true;
+                }
+            }
+
             //check birthdate
             $birthdate = $request->request->get('birthdate', false);
             if($birthdate !== $user->getCustomField('birthdate') && false !== $birthdate)

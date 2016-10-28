@@ -65,16 +65,16 @@
         </tbody>
     </table>
 </div>
+<?php if($user->getCustomField('myanimelist')): ?>
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title"><i class="glyphicon glyphicon-list-alt"></i> <span class="title">MyAnimeList</span></h3>
     </div>
     <div class="panel-body user-activity">
-        <?php if($data->rowCount()): ?>
-			//myanimelist
-        <?php endif ?>
+        <a href="https://myanimelist.net/animelist/<?= $user->getCustomField('myanimelist') ?>&sclick=1"><img src="https://myanimelist.cdn-dena.com/signature/<?= $user->getCustomField('myanimelist') ?>.png" /></a>
     </div>
 </div>
+<?php endif; ?>
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title"><i class="glyphicon glyphicon-align-justify"></i> <span class="title">Ostatnia aktywność</span></h3>

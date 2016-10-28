@@ -16,6 +16,7 @@ return array(
         'Sequence\\Command\\CacheClearCommand',
         'Anime\\Command\\ClearOldCommand',
         'Anime\\Command\\DatabaseBackupCommand',
+        'Anime\\Command\\DeleteOldUsersCommand',
         'Anime\\Command\\StatisticsCommand',
     ),
     'providers' => array(
@@ -31,12 +32,18 @@ return array(
         'database' => array(
             'default_connection' => 'animezone_md',
             'connections' => array(
+//                'animezone_md' => array(
+//                    'username' => 'm1018_animezone',
+//                    'password' => 'DY95KHbmOZdsVzEdmlqh',
+//                    'dsn' => 'mysql:host=mysql3.mydevil.net;dbname=m1018_animezone',
+//                    'driver_options' => array(\PDO::ATTR_PERSISTENT => true),
+//                ),
                 'animezone_md' => array(
-                    'username' => 'm1018_animezone',
-                    'password' => 'DY95KHbmOZdsVzEdmlqh',
-                    'dsn' => 'mysql:host=mysql3.mydevil.net;dbname=m1018_animezone',
+                    'username' => 'root',
+                    'password' => '',
+                    'dsn' => 'mysql:host=localhost;dbname=m1018_animezone',
                     'driver_options' => array(\PDO::ATTR_PERSISTENT => true),
-                ),
+                )
             ),
             'enabled' => true,
         ),

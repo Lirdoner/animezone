@@ -184,9 +184,15 @@ class User
     /**
      * @param string $password
      */
-    public function setPassword($password)
+    public function setPassword($password, $hash = true)
     {
-        $this->userData['password'] = password_hash($password, PASSWORD_BCRYPT, array('cost' => 11, 'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)));
+        if($hash)
+        {
+            $this->userData['password'] = password_hash($password, PASSWORD_BCRYPT, array('cost' => 11, 'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)));
+        } else
+        {
+            $this->userData['password'] = $password;
+        }
     }
 
     /**

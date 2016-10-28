@@ -46,20 +46,21 @@ class EpisodeManager extends EntityManager
      */
     public function getEpisodesForCategory($categoryId)
     {
-        return $this->database->query('
+        $query = '
             SELECT *
             FROM
             (
-                SELECT e.*, c.name, c.alias, l.lang
+                SELECT e.*, c.name, c.alias, l.lang, l.lang_id
                 FROM episodes AS e
                 JOIN categories AS c ON c.id = e.category_id
                 JOIN links AS l ON e.id = l.episode_id
                 WHERE c.id = '.$categoryId.'
-                ORDER BY FIELD(l.lang_id, 2, 1, 0)
+                GROUP BY number, lang
+                ORDER BY number, FIELD(lang_id, 2, 1, 0)
             ) AS query
             GROUP BY number
-            ORDER BY number DESC
-        ');
+        ';
+        return $this->database->query($query);
     }
 
     /**
@@ -73,22 +74,37 @@ class EpisodeManager extends EntityManager
     {
         if(null == $data = $this->cache->get('episodes/latest'.$limit.($all ? 'all' : 'pl')))
         {
-            $data = $this->database->query('
-                SELECT *
-                FROM
-                (
-                    SELECT e.date_add, e.number, l.lang, e.title, c.name, c.alias, c.image, e.category_id, c.id'.($limit <= 15 ? ', c.description, c.alternate, c.pegi, c.year, c.status' : null).'
+            $query = '
+                    SELECT *
+                    FROM (SELECT e.date_add, e.number, l.lang, e.title, c.name, c.alias, c.image, e.category_id, c.id'.($limit <= 15 ? ', c.description, c.alternate, c.pegi, c.year, c.status' : null).'
                     FROM episodes AS e
-                    JOIN categories AS c ON e.category_id = c.id
-                    JOIN links AS l ON l.episode_id=e.id
-                    WHERE e.enabled = 1 AND e.date_add > NOW() - INTERVAL '.$interval.'
-                    '.($all ? null : 'AND l.lang_id = 2').'
-                    ORDER BY e.date_add DESC'.($all ? ', FIELD(l.lang_id, 2, 1, 0)' : null).'
-                ) AS query
-                GROUP BY category_id
-                ORDER BY date_add DESC
-                LIMIT '.$limit.'
-            ');
+                    JOIN links l ON e.id = l.episode_id
+                    JOIN categories c ON c.id = e.category_id
+                    WHERE e.enabled = 1 AND e.date_add > NOW() - INTERVAL '.$interval.' '.($all ? null : 'AND l.lang_id = 2').'
+                    GROUP BY e.category_id, e.date_add, l.lang
+                    ORDER BY e.date_add DESC'.($all ? ', FIELD(l.lang_id, 2, 1, 0)' : null).') AS data
+                    GROUP BY id
+                    ORDER BY date_add DESC
+                    LIMIT '.$limit;
+
+            $data = $this->database->query($query);
+
+//            $data = $this->database->query('
+//                SELECT *
+//                FROM
+//                (
+//                    SELECT e.date_add, e.number, l.lang, e.title, c.name, c.alias, c.image, e.category_id, c.id'.($limit <= 15 ? ', c.description, c.alternate, c.pegi, c.year, c.status' : null).'
+//                    FROM episodes AS e
+//                    JOIN categories AS c ON e.category_id = c.id
+//                    JOIN links AS l ON l.episode_id=e.id
+//                    WHERE e.enabled = 1 AND e.date_add > NOW() - INTERVAL '.$interval.'
+//                    '.($all ? null : 'AND l.lang_id = 2').'
+//                    ORDER BY e.date_add DESC'.($all ? ', FIELD(l.lang_id, 2, 1, 0)' : null).'
+//                ) AS query
+//                GROUP BY category_id
+//                ORDER BY date_add DESC
+//                LIMIT '.$limit.'
+//            ');
 
             $data = $data->fetchAll();
 
